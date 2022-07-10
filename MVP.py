@@ -5,9 +5,9 @@ import requests
 import response 
 
 
-def GetDownloadUrl(download_path, headers) -> str:
-    YandexDownloadUrl = "https://cloud-api.yandex.net/v1/disk/resources/upload"
-    request = requests.get(YandexDownloadUrl, headers=headers, params={'path' : download_path})
+def GetUploadUrl(upload_path, headers) -> str:
+    YandexUploadUrl = "https://cloud-api.yandex.net/v1/disk/resources/upload"
+    request = requests.get(YandexUploadUrl, headers=headers, params={'path' : upload_path})
     if request.status_code != 200 :
         print("something goes wrong : " + str(request.status_code))
         return ""
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     Content_type = mime.from_file(file_path)
     headers = {'Accept' : 'application/json', 'Authorization' : config['OAuth']}
     headers_send = {'Content-type' : Content_type, 'Slug' : filename}
-    download_url = GetDownloadUrl("/test/Student2ID.jpeg", headers)
-    if download_url == "" :
+    upload_url = GetUploadUrl("/test/Student2ID.jpeg", headers)
+    if upload_url == "" :
         exit()
-    PutFile(download_url, headers_send, file_path)
+    PutFile(upload_url, headers_send, file_path)
