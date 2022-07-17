@@ -1,15 +1,19 @@
 import json
 import magic
+from pathlib import Path
 import requests
 import response 
 
 class API:
+    key_values = {"YandexDataUrl" : "https://cloud-api.yandex.net/v1/disk/resources",
+                           "YandexDownloadUrl" : "https://cloud-api.yandex.net/v1/disk/resources/download",
+                           "YandexUploadUrl" : "https://cloud-api.yandex.net/v1/disk/resources/upload"}
     def __init__(self, config_path):
         # self.request = requests() how to create a variable with response type
         self.config = json.load(open(config_path))
-        self.key_values = {"YandexDataUrl" : "https://cloud-api.yandex.net/v1/disk/resources",
-                           "YandexDownloadUrl" : "https://cloud-api.yandex.net/v1/disk/resources/download",
-                           "YandexUploadUrl" : "https://cloud-api.yandex.net/v1/disk/resources/upload"}
+        # self.key_values = {"YandexDataUrl" : "https://cloud-api.yandex.net/v1/disk/resources",
+        #                    "YandexDownloadUrl" : "https://cloud-api.yandex.net/v1/disk/resources/download",
+        #                    "YandexUploadUrl" : "https://cloud-api.yandex.net/v1/disk/resources/upload"}
         # print("test APi init")
     def GetDownloadUrl(self, path, headers) -> str:
         request = requests.get(self.key_values["YandexDownloadUrl"], headers=headers, params={'path' : path})
@@ -27,7 +31,6 @@ class API:
         list_of_dir = []
         list_of_files = []
         request = requests.get(self.key_values["YandexDataUrl"], headers=headers, params={'path' : path, 'sort' : 'path'})
-        print(request.url)
         if request.status_code != 200 :
             print("something goes wrong : " + str(request.status_code))
             print(request.json()['description'])
@@ -59,13 +62,13 @@ class API:
 
     def UploadScript(self, file_path, file_name, disk_path):
         mime = magic.Magic(mime=True)
-        Content_type = mime.from_file(file_path)
+        Content_type = mime.from_file(str(file_path))
         headers = {'Accept' : 'application/json', 'Authorization' : self.config['OAuth']}
         headers_send = {'Content-type' : Content_type, 'Slug' : file_name}
-        download_url = self.GetUploadUrl(disk_path + '/'+ file_name, headers)
+        download_url = self.GetUploadUrl(disk_path + '/' + file_name, headers)
         if download_url == "" :
             exit()
-        self.PutFile(download_url, headers_send, file_path)
+        self.PutFile(download_url, headers_send, str(file_path))
 
     def DownloadScript(self):
         headers = {'Accept' : 'application/json', 'Authorization' : self.config['OAuth']}
@@ -75,6 +78,11 @@ class API:
         while req != "exit":
             if "cd" in req:
                 trash, number =  req.split()
+                if number == "..":
+                    path = str(Path(path).parent)
+                    list_of_data = self.GetMetaData(path, headers=headers)
+                    req = input()
+                    continue
                 if int(number) >= len(list_of_data[0]):
                     print("Wrong dir number")
                     req = input()
