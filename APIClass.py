@@ -14,8 +14,8 @@ def DecimalSize(size) -> str:
 
 class API:
     key_values = {"YandexDataUrl" : "https://cloud-api.yandex.net/v1/disk/resources",
-                           "YandexDownloadUrl" : "https://cloud-api.yandex.net/v1/disk/resources/download",
-                           "YandexUploadUrl" : "https://cloud-api.yandex.net/v1/disk/resources/upload"}
+                  "YandexDownloadUrl" : "https://cloud-api.yandex.net/v1/disk/resources/download",
+                  "YandexUploadUrl" : "https://cloud-api.yandex.net/v1/disk/resources/upload"}
     def __init__(self, config_path):
         # self.request = requests() how to create a variable with response type
         self.config = json.load(open(config_path))
@@ -23,6 +23,7 @@ class API:
         #                    "YandexDownloadUrl" : "https://cloud-api.yandex.net/v1/disk/resources/download",
         #                    "YandexUploadUrl" : "https://cloud-api.yandex.net/v1/disk/resources/upload"}
         # print("test APi init")
+
     def GetDownloadUrl(self, path, headers) -> str:
         request = requests.get(self.key_values["YandexDownloadUrl"], headers=headers, params={'path' : path})
         if request.status_code != 200 :
@@ -34,7 +35,22 @@ class API:
         request = requests.get(url=url)
         with open(file_name, "wb") as file:
             file.write(request.content)
-    
+
+    def CreateNewDirectory(self, path, headers):
+        request = requests.put(self.key_values["YandexDataUrl"], headers=headers, params={'path': path})
+        # print(request.json()["error"])
+        if request.status_code == 409:
+            if request.json()["error"] == "DiskPathPointsToExistentDirectoryError" :
+                print(f"specified directory {path} already exists")
+                return
+            parents = Path(path).parents
+            for i in range(len(parents)-1, -1, -1):
+                request = requests.put(self.key_values["YandexDataUrl"], headers=headers, params={'path': parents[i]})
+            request = requests.put(self.key_values["YandexDataUrl"], headers=headers, params={'path': path})
+        if request.status_code != 201:
+            description = request.json()["description"]
+            print(f"{request.status_code} something gone wrong \n error description: {description}")
+        
     def GetMetaData(self, path, headers) -> list:
         list_of_dir = []
         list_of_files = []
@@ -117,4 +133,4 @@ class API:
                 req = input()
                 continue
             req = input()
-            
+    
