@@ -16,9 +16,17 @@ if __name__ == "__main__":
             print("No such file, try again")
         # file_name = file_path[file_path.rfind('/') + 1 :]
         file_name = str(file_path.name)
-        api.UploadScript(file_path, file_name, '/test')
+        req = input("type \"cd\" to got to choose the installation path or type the path\n")
+        if req == "cd":
+            disk_path = api.ChoosePath()
+            api.UploadScript(file_path, file_name, disk_path)
+        else:
+            if api.CheckPathExistance(req):
+                api.UploadScript(file_path, file_name, req)
+            else:
+                api.CreateNewDirectory(req)
+                api.UploadScript(file_path, file_name, req)
     if parser.parse_args().download is not None:
         api.DownloadScript()
     if parser.parse_args().download is None and parser.parse_args().upload is None:
         parser.print_help()
-        
