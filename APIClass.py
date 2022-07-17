@@ -4,6 +4,14 @@ from pathlib import Path
 import requests
 import response 
 
+def DecimalSize(size) -> str:
+    suffixes = ['B', 'KB', 'MB', 'GB', 'TB']
+    i = 0
+    while size >= 1024 and i < len(suffixes) - 1:
+        size /= 1024
+        i += 1
+    return f"{size:.2f} {suffixes[i]}"
+
 class API:
     key_values = {"YandexDataUrl" : "https://cloud-api.yandex.net/v1/disk/resources",
                            "YandexDownloadUrl" : "https://cloud-api.yandex.net/v1/disk/resources/download",
@@ -43,7 +51,7 @@ class API:
         for dir in list_of_dir:
             print("d", dir, end='\n')
         for i in range(len(list_of_files)):
-            print("f",i, list_of_files[i][0], list_of_files[i][1], list_of_files[i][2])
+            print("f", i, list_of_files[i][0], DecimalSize(list_of_files[i][1]), list_of_files[i][2])
         return [list_of_dir, list_of_files]
 
     def GetUploadUrl(self, download_path, headers) -> str:
