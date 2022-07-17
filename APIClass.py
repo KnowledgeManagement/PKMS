@@ -108,9 +108,13 @@ class API:
                     continue
                 path += list_of_data[1][int(number)][0]
                 download_url = self.GetDownloadUrl(path, headers)
+                print(f"[+] Downloading file {Path(path).name} from {Path(path).stem}")
+                print("[+] Processing...")
                 self.CreateFileFromUrl(download_url, list_of_data[1][int(number)][0])
+                print(f"[+] File {Path(path).name} downloaded successfully")
             else:
                 print("Wrong command")
                 req = input()
                 continue
             req = input()
+            

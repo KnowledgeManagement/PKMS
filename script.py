@@ -21,3 +21,4 @@ if __name__ == "__main__":
         api.DownloadScript()
     if parser.parse_args().download is None and parser.parse_args().upload is None:
         parser.print_help()
+        
