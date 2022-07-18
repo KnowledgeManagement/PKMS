@@ -31,10 +31,32 @@ class API:
             return ""
         return request.json()['href']
 
-    def CreateFileFromUrl(self, url, file_name):
+    def CreateFileFromUrl(self, url, file_name) -> str:
         request = requests.get(url=url)
-        with open(file_name, "wb") as file:
-            file.write(request.content)
+        current_dir = Path.cwd()
+        file_path = str(current_dir) + "/" + file_name
+        if Path(file_path).exists():
+            suffixes = Path(file_name).suffixes
+            suffixes_name = "".join(suffixes)
+            p = Path(file_path)
+            i = 1
+            while p.exists():
+                p_stem = file_path
+                for j in range(len(suffixes)):
+                    p_stem = Path(p_stem).stem
+                if i > 1:
+                    file_path = str(p.parent) + '/' + p_stem[0 : len(str(p.stem))-1] + str(i) + suffixes_name
+                else:
+                    file_path = str(p.parent) + "/" + p_stem + str(i) + suffixes_name
+                p = Path(file_path)
+                i += 1
+            with open(p.name, "wb") as file:
+                file.write(request.content)
+            return p.name
+        else:
+            with open(file_name, "wb") as file:
+                file.write(request.content)
+            return file_name
 
     def CreateNewDirectory(self, path, headers):
         request = requests.put(self.key_values["YandexDataUrl"], headers=headers, params={'path': path})
@@ -166,8 +188,8 @@ class API:
                 download_url = self.GetDownloadUrl(path, headers)
                 print(f"[+] Downloading file {Path(path).name} from {Path(path).stem}")
                 print("[+] Processing...")
-                self.CreateFileFromUrl(download_url, list_of_data[1][int(number)][0])
-                print(f"[+] File {Path(path).name} downloaded successfully")
+                file_name = self.CreateFileFromUrl(download_url, list_of_data[1][int(number)][0])
+                print(f"[+] File {file_name} downloaded successfully")
                 path = str(Path(path).parent)
                 list_of_data = self.GetMetaData(path, headers=headers)
             else:
