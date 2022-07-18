@@ -8,9 +8,9 @@ if __name__ == "__main__":
         description="Upload or Download file to your YandexDisk."
     )
     api = APIClass.API("config.json")
-    parser.add_argument('-upload', '--upload', '-u', type=str, nargs='?', default=None)
-    parser.add_argument('-download', '--download', '-d', type=str, nargs='?', default=None)
-    if parser.parse_args().upload is not None:
+    parser.add_argument('-upload', '--upload', '-u', type=str, nargs='?', default="None")
+    parser.add_argument('-download', '--download', '-d', type=str, nargs='?', default="None")
+    if parser.parse_args().upload != "None":
         file_path = Path(parser.parse_args().upload)
         if file_path.exists() == False:
             print("No such file, try again")
@@ -26,7 +26,7 @@ if __name__ == "__main__":
             else:
                 api.CreateNewDirectory(req)
                 api.UploadScript(file_path, file_name, req)
-    if parser.parse_args().download is not None:
+    if parser.parse_args().download != "None":
         api.DownloadScript()
-    if parser.parse_args().download is None and parser.parse_args().upload is None:
+    if parser.parse_args().download == "None" and parser.parse_args().upload == "None":
         parser.print_help()
