@@ -12,7 +12,6 @@ def DecimalSize(size) -> str:
         size /= 1024
         i += 1
     return f"{size:.2f} {suffixes[i]}"
-    
 @dataclass(init=True)
 class APIClass:
     OAuth : str
@@ -22,15 +21,6 @@ class APIClass:
     key_values = {"YandexDataUrl" : "https://cloud-api.yandex.net/v1/disk/resources",
                   "YandexDownloadUrl" : "https://cloud-api.yandex.net/v1/disk/resources/download",
                   "YandexUploadUrl" : "https://cloud-api.yandex.net/v1/disk/resources/upload"}
-    # def __init__(self):
-    #     self.OAuth = json.load(open("config.json"))["OAuth"]
-    #     self.headers = {'Accept' : 'application/json', 'Authorization' : self.OAuth}
-    #     self.list_of_data = [[],[],"empty"]
-    #     self.disk_path = "/"
-    # OAuth = json.load(open("config.json"))["OAuth"]
-
-    def SetOAuth(self, OAuth: str) -> str:
-        self.OAuth = OAuth
 
     def GetMetaData(self):
         headers = {'Accept' : 'application/json', 'Authorization' : self.OAuth}
