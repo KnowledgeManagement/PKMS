@@ -37,23 +37,16 @@ class APIClass:
                 list_of_dir.append(item["name"])
             if item['type'] == 'file':
                 list_of_files.append([item['name'], item['size'], item['modified']])
-        for i in range(len(list_of_dir)):
-            resp += (f"d {list_of_dir[i]}  /cd{i} \n")
-            # print("d", dir, end='\n')
-        for i in range(len(list_of_files)):
-            resp += (f"f {i} {list_of_files[i][0]} {DecimalSize(list_of_files[i][1])} /get{i}\n")
-            # print("f", i, list_of_files[i][0], DecimalSize(list_of_files[i][1]), list_of_files[i][2])
         self.list_of_data = [list_of_dir, list_of_files]
-        self.resp = resp
     
-    # def MetaDataDownload(self):
-    #     for i in range(len(self.list_of_data[0])):
-    #         resp += (f"d {self.list_of_data[0][i]}  /cd{i} \n")
-    #         # print("d", dir, end='\n')
-    #     for i in range(len(self.list_of_data[1])):
-    #         resp += (f"f {i} {self.list_of_data[1][i][0]} {DecimalSize(self.list_of_data[1][i][1])} /get{i}\n")
-    #         # print("f", i, list_of_files[i][0], DecimalSize(list_of_files[i][1]), list_of_files[i][2])
-    #     self.resp = resp
+    def MetaDataDownload(self):
+        resp = ""
+        for i in range(len(self.list_of_data[0])):
+            resp += (f"d {self.list_of_data[0][i]}  /cd{i} \n")
+        for i in range(len(self.list_of_data[1])):
+            resp += (f"f {i} {self.list_of_data[1][i][0]} {DecimalSize(self.list_of_data[1][i][1])} /get{i}\n")
+        resp += "/back  /root\n"
+        self.resp = resp
 
     def GetUploadUrl(self, upload_path) -> str:
         headers = {'Accept' : 'application/json', 'Authorization' : self.OAuth}

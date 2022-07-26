@@ -4,6 +4,7 @@ from API_bot import APIClass
 from bot_token import Bot_token
 import json
 import magic
+from pathlib import Path
 
 bot = Bot(token=Bot_token)
 dp = Dispatcher(bot)
@@ -33,8 +34,9 @@ async def download(message: types.Message):
     user_id = message.from_id
     await message.answer("Downloading MetaData")
     Users[user_id].GetMetaData()
+    Users[user_id].MetaDataDownload()
     await message.answer(Users[user_id].resp)
-
+    
 @dp.message_handler(lambda message: message.text.startswith("/cd"))
 async def move(message: types.Message):
     user_id = message.from_id
@@ -42,6 +44,23 @@ async def move(message: types.Message):
     Users[user_id].disc_path += Users[user_id].list_of_data[0][dir_index]
     Users[user_id].disc_path += "/"
     Users[user_id].GetMetaData()
+    Users[user_id].MetaDataDownload()
+    await message.answer(Users[user_id].resp)
+
+@dp.message_handler(lambda message: message.text.startswith("/root"))
+async def move(message: types.Message):
+    user_id = message.from_id
+    Users[user_id].disc_path = "/"
+    Users[user_id].GetMetaData()
+    Users[user_id].MetaDataDownload()
+    await message.answer(Users[user_id].resp)
+
+@dp.message_handler(lambda message: message.text.startswith("/back"))
+async def move(message: types.Message):
+    user_id = message.from_id
+    Users[user_id].disc_path = str(Path(Users[user_id].disc_path).parent)
+    Users[user_id].GetMetaData()
+    Users[user_id].MetaDataDownload()
     await message.answer(Users[user_id].resp)
 
 @dp.message_handler(lambda message: message.text.startswith("/get"))
