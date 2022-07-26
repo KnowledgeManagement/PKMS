@@ -8,9 +8,7 @@ import magic
 bot = Bot(token=Bot_token)
 dp = Dispatcher(bot)
 
-# OAuth = json.load(open("config.json"))["OAuth"]
 Users = {}
-# api = APIClass(OAuth=OAuth)
 
 @dp.message_handler(commands="start")
 async def start(message: types.Message):
@@ -33,27 +31,10 @@ async def OAuth(message: types.Message):
 @dp.message_handler(commands="download")
 async def download(message: types.Message):
     user_id = message.from_id
-    start_buttons = [
-        types.InlineKeyboardButton("move to dir", callback_data="cd"),
-        types.InlineKeyboardButton("get file", callback_data="get_file")
-    ]
     await message.answer("Downloading MetaData")
     Users[user_id].GetMetaData()
-    keyboard = types.InlineKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    keyboard.add(*start_buttons)
-    await message.answer(Users[user_id].resp, reply_markup=keyboard)
-    # types.CallbackQuery()
-    # await message.answer("Choose", reply_markup=keyboard)
-    # bot.send_document()
-@dp.callback_query_handler(text="cd")
-async def cd(message: types.Message):
-    # await bot.delete_message(message.from_user.id, message.message.message_id)
-    # dir_string = f""
-    # for dir in api.list_of_data[0]:
-    #     dir_string += dir
-    #     dir_string += "\n"
-    await bot.send_message(message.from_user.id, "Write number of directory you want to go?")
-    
+    await message.answer(Users[user_id].resp)
+
 @dp.message_handler(lambda message: message.text.startswith("/cd"))
 async def move(message: types.Message):
     user_id = message.from_id
