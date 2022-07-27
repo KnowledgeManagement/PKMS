@@ -16,7 +16,7 @@ async def start(message: types.Message):
     await message.answer("please follow the link with the id of your Yandexapp with permission to change YandexDisk\n"\
                     "https://oauth.yandex.ru/authorize?response_type=token&client_id=<app Id>\nplease send OAuth "\
                     "in format </OAuth \"your OAuth\">")
-
+                    
 @dp.message_handler(lambda message: message.text.startswith("/OAuth"))
 async def OAuth(message: types.Message):
     user_id = message.from_id
@@ -27,6 +27,7 @@ async def OAuth(message: types.Message):
         OAuth = message.text[6:]
         print(OAuth)
     Users[user_id] = APIClass(OAuth=OAuth)
+    await bot.delete_message(message.chat.id, message.message_id)
     await message.answer("Your OAuth saved")
 
 @dp.message_handler(commands="download")
@@ -36,7 +37,7 @@ async def download(message: types.Message):
     Users[user_id].GetMetaData()
     Users[user_id].MetaDataDownload()
     await message.answer(Users[user_id].resp)
-    
+
 @dp.message_handler(lambda message: message.text.startswith("/cd"))
 async def move(message: types.Message):
     user_id = message.from_id
@@ -47,18 +48,27 @@ async def move(message: types.Message):
     Users[user_id].MetaDataDownload()
     await message.answer(Users[user_id].resp)
 
-@dp.message_handler(lambda message: message.text.startswith("/root"))
-async def move(message: types.Message):
-    user_id = message.from_id
-    Users[user_id].disc_path = "/"
-    Users[user_id].GetMetaData()
-    Users[user_id].MetaDataDownload()
-    await message.answer(Users[user_id].resp)
+# @dp.message_handler(content_types=['photo'])
+# async def photo(message: types.Message):
+#     # with open("kek", "wb") as file:
+#     #     file.write(message.photo)
+#     print(type(message.photo))
+#     print(len(message.photo))
+#     print("kek")
+#     await message.answer("kek")
 
 @dp.message_handler(lambda message: message.text.startswith("/back"))
 async def move(message: types.Message):
     user_id = message.from_id
     Users[user_id].disc_path = str(Path(Users[user_id].disc_path).parent)
+    Users[user_id].GetMetaData()
+    Users[user_id].MetaDataDownload()
+    await message.answer(Users[user_id].resp)
+
+@dp.message_handler(lambda message: message.text.startswith("/root"))
+async def move(message: types.Message):
+    user_id = message.from_id
+    Users[user_id].disc_path = str(Path(Users[user_id].disc_path).root)
     Users[user_id].GetMetaData()
     Users[user_id].MetaDataDownload()
     await message.answer(Users[user_id].resp)
