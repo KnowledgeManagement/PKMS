@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from enum import Enum
 import json
 import magic
 from pathlib import Path
@@ -12,12 +13,18 @@ def DecimalSize(size) -> str:
         size /= 1024
         i += 1
     return f"{size:.2f} {suffixes[i]}"
+
+class Mod(Enum):
+    DOWNLOAD = "d"
+    UPLOAD = "u"
+
 @dataclass(init=True)
 class APIClass:
     OAuth : str
     list_of_data: list = field(default_factory=list)
     resp: str = "empty"
-    disc_path: str = "/"
+    disk_path: str = "/"
+    mod: Mod = Mod.DOWNLOAD
     key_values = {"YandexDataUrl" : "https://cloud-api.yandex.net/v1/disk/resources",
                   "YandexDownloadUrl" : "https://cloud-api.yandex.net/v1/disk/resources/download",
                   "YandexUploadUrl" : "https://cloud-api.yandex.net/v1/disk/resources/upload"}
@@ -27,7 +34,7 @@ class APIClass:
         list_of_dir = []
         list_of_files = []
         resp = f""
-        request = requests.get(self.key_values["YandexDataUrl"], headers=headers, params={'path' : self.disc_path, 'sort' : 'path'})
+        request = requests.get(self.key_values["YandexDataUrl"], headers=headers, params={'path' : self.disk_path, 'sort' : 'path'})
         if request.status_code != 200:
             resp += f"something goes wrong : {str(request.status_code)}"
             resp += f"{request.json()['description']}"
@@ -48,6 +55,15 @@ class APIClass:
         resp += "/back  /root\n"
         self.resp = resp
 
+    def MetaDataUpload(self):
+        resp = ""
+        for i in range(len(self.list_of_data[0])):
+            resp += (f"d {self.list_of_data[0][i]}  /cd{i} \n")
+        for i in range(len(self.list_of_data[1])):
+            resp += (f"f {i} {self.list_of_data[1][i][0]} {DecimalSize(self.list_of_data[1][i][1])} \n")
+        resp += "/back  /root\n"
+        self.resp = resp
+
     def GetUploadUrl(self, upload_path) -> str:
         headers = {'Accept' : 'application/json', 'Authorization' : self.OAuth}
         request = requests.get(self.key_values["YandexUploadUrl"], headers=headers, params={'path' : upload_path})
@@ -64,3 +80,11 @@ class APIClass:
             print("something goes wrong : " + str(request.status_code))
             return ""
         return request.json()['href']
+
+    def UploadViaLink(self, download_link, file_name):
+        headers = {'Accept' : 'application/json', 'Authorization' : self.OAuth}
+        whole_path = self.disk_path + file_name
+        request = requests.post(self.key_values["YandexUploadUrl"], headers=headers, params={"url": download_link,"path" : whole_path})
+        # print(request.json()["description"])
+        status = requests.get(request.json()['href'])
+        print(status)
