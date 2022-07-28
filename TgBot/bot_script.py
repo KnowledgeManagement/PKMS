@@ -1,4 +1,3 @@
-from re import U
 from aiogram import Bot, Dispatcher, executor, types
 import API_bot
 from API_bot import APIClass, Mod
@@ -11,10 +10,20 @@ from pathlib import Path
 bot = Bot(token=Bot_token)
 dp = Dispatcher(bot)
 
+
 Users = {}
 
 @dp.message_handler(commands="start")
 async def start(message: types.Message):
+    comm = json.load(open("bot_commands.json"))
+    command_list = [types.BotCommand(**com) for com in comm["commands"]]
+    # for com in command_list:
+    #     await bot.set_my_commands([com])
+    # await bot.set_my_commands([types.BotCommand(command="start", description="Start using bot"), 
+    #                            types.BotCommand(command="download", description="Starts download process"),
+    #                            types.BotCommand(command="upload", description="Starts upload process"),
+    #                            types.BotCommand(command="oauth", description="Use this command if you want to change your OAuth"),])
+    await bot.set_my_commands(command_list)
     await message.answer("please follow the link with the id of your Yandexapp with permission to change YandexDisk\n"\
                     "https://oauth.yandex.ru/authorize?response_type=token&client_id=<app Id>\nplease send OAuth "\
                     "in format </OAuth \"your OAuth\">")
