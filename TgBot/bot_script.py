@@ -114,7 +114,7 @@ async def get(message: types.Message):
     if download_url == "":
         log.error(f"User {user_id} didn't get download url with responce: {Users[user_id].resp}")
     else:
-        await message.answer_photo(photo=download_url)
+        await message.answer_document(document=download_url)
 
 if __name__ == "__main__":
     executor.start_polling(dp)
