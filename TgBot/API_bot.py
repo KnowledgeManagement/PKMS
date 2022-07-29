@@ -49,18 +49,18 @@ class APIClass:
     def MetaDataDownload(self):
         resp = ""
         for i in range(len(self.list_of_data[0])):
-            resp += (f"d {self.list_of_data[0][i]}  /cd{i} \n")
+            resp += (f"\U0001F4C1 {self.list_of_data[0][i]}  /cd{i} \n")
         for i in range(len(self.list_of_data[1])):
-            resp += (f"f {i} {self.list_of_data[1][i][0]} {DecimalSize(self.list_of_data[1][i][1])} /get{i}\n")
+            resp += (f"\U0001F4CE {i} {self.list_of_data[1][i][0]} {DecimalSize(self.list_of_data[1][i][1])} /get{i}\n")
         resp += "/back  /root\n"
         self.resp = resp
 
     def MetaDataUpload(self):
         resp = ""
         for i in range(len(self.list_of_data[0])):
-            resp += (f"d {self.list_of_data[0][i]}  /cd{i} \n")
+            resp += (f"\U0001F4C1 {self.list_of_data[0][i]}  /cd{i} \n")
         for i in range(len(self.list_of_data[1])):
-            resp += (f"f {i} {self.list_of_data[1][i][0]} {DecimalSize(self.list_of_data[1][i][1])} \n")
+            resp += (f"\U0001F4CE {i} {self.list_of_data[1][i][0]} {DecimalSize(self.list_of_data[1][i][1])} \n")
         resp += "/back  /root\n"
         self.resp = resp
 
@@ -80,4 +80,4 @@ class APIClass:
         request = requests.post(self.key_values["YandexUploadUrl"], headers=headers, params={"url": download_link,"path" : whole_path})
         # print(request.json()["description"])
         status = requests.get(request.json()['href'])
-        print(status)
+        # print(status)
