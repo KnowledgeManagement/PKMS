@@ -64,20 +64,13 @@ class APIClass:
         resp += "/back  /root\n"
         self.resp = resp
 
-    def GetUploadUrl(self, upload_path) -> str:
-        headers = {'Accept' : 'application/json', 'Authorization' : self.OAuth}
-        request = requests.get(self.key_values["YandexUploadUrl"], headers=headers, params={'path' : upload_path})
-        if request.status_code != 200 :
-            description = request.json()["description"]
-            print(f"something goes wrong : {description}" + str(request.status_code))
-            return ""
-        return request.json()['href']
-
     def GetDownloadUrl(self, download_path) -> str:
         headers = {'Accept' : 'application/json', 'Authorization' : self.OAuth}
         request = requests.get(self.key_values["YandexDownloadUrl"], headers=headers, params={'path' : download_path})
         if request.status_code != 200:
-            print("something goes wrong : " + str(request.status_code))
+            description = request.json()["description"]
+            # print("something goes wrong : " + str(request.status_code))
+            self.resp = f"{description} code: {request.status_code}"
             return ""
         return request.json()['href']
 
